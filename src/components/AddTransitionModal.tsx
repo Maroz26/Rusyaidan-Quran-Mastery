@@ -113,25 +113,25 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="bg-gradient-to-br from-[#123E30] via-[#0E3529] to-[#0A2920] rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl shadow-black/70 border-2 border-emerald-500/50 max-h-[90vh] overflow-y-auto flex flex-col">
+      <div className="bg-gradient-to-br from-[#1E6851] via-[#257C61] to-[#185542] rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl shadow-black/80 border-2 border-[#3EAB88]/70 max-h-[90vh] overflow-y-auto flex flex-col text-white">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-emerald-500/30">
+        <div className="flex items-center justify-between pb-4 border-b border-white/20">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white flex items-center justify-center shadow-md border border-emerald-400/40">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#124636] to-[#0A2E23] text-white flex items-center justify-center shadow-md border border-[#48BFA0]/60">
               <Plus className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-extrabold text-white text-lg">
                 Tambah Transisi Ayat
               </h3>
-              <p className="text-xs text-emerald-200/80">
+              <p className="text-xs text-emerald-100/90">
                 {collection.name} (Surah {collection.referenceNumber}) • Rentang 1–{maxAyah} Ayat
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-emerald-300 hover:text-white hover:bg-emerald-800/60 transition-colors"
+            className="p-1.5 rounded-xl text-emerald-200 hover:text-white hover:bg-black/30 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -142,8 +142,8 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             {/* Input 1: First Verse */}
             <div>
-              <label className="block text-xs font-bold text-emerald-200 mb-1.5">
-                Ayat Pertama <span className="text-rose-400">*</span>
+              <label className="block text-xs font-bold text-white mb-1.5">
+                Ayat Pertama <span className="text-rose-300">*</span>
               </label>
               <input
                 type="number"
@@ -153,17 +153,17 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
                 value={firstVerseStr}
                 onChange={(e) => handleFirstVerseChange(e.target.value)}
                 autoFocus
-                className="w-full px-4 py-2.5 rounded-xl border border-emerald-500/40 bg-[#08221A] focus:border-emerald-300 focus:ring-2 focus:ring-emerald-400/20 outline-hidden text-base font-semibold text-white placeholder:text-emerald-600/70 shadow-inner"
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-white/25 bg-black/35 focus:border-white focus:ring-2 focus:ring-white/20 outline-hidden text-base font-semibold text-white placeholder:text-emerald-200/50 shadow-inner"
               />
-              <span className="text-[11px] text-emerald-300/80 mt-1 block">
+              <span className="text-[11px] text-emerald-100/80 mt-1 block font-medium">
                 Nomor ayat pemicu (N)
               </span>
             </div>
 
             {/* Input 2: Next Verse */}
             <div>
-              <label className="block text-xs font-bold text-emerald-200 mb-1.5">
-                Ayat Selanjutnya <span className="text-rose-400">*</span>
+              <label className="block text-xs font-bold text-white mb-1.5">
+                Ayat Selanjutnya <span className="text-rose-300">*</span>
               </label>
               <input
                 type="number"
@@ -175,9 +175,9 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
                   setNextVerseStr(e.target.value);
                   setSubmitError(null);
                 }}
-                className="w-full px-4 py-2.5 rounded-xl border border-emerald-500/40 bg-[#08221A] focus:border-emerald-300 focus:ring-2 focus:ring-emerald-400/20 outline-hidden text-base font-semibold text-white placeholder:text-emerald-600/70 shadow-inner"
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-white/25 bg-black/35 focus:border-white focus:ring-2 focus:ring-white/20 outline-hidden text-base font-semibold text-white placeholder:text-emerald-200/50 shadow-inner"
               />
-              <span className="text-[11px] text-emerald-300/80 mt-1 block">
+              <span className="text-[11px] text-emerald-100/80 mt-1 block font-medium">
                 Harus berurutan (N + 1)
               </span>
             </div>
@@ -185,37 +185,37 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
 
           {/* Error alert */}
           {(validationError || submitError) && (
-            <div className="p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs flex items-start gap-2.5 shadow-md">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
+            <div className="p-3.5 rounded-xl bg-rose-950/90 border border-rose-400 text-white text-xs flex items-start gap-2.5 shadow-md">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-300" />
               <span>{validationError || submitError}</span>
             </div>
           )}
 
           {/* Automatic Arabic Verse Retrieval Preview */}
           {isValidPair && firstVerseData && nextVerseData && (
-            <div className="bg-[#0A2A20] border border-emerald-500/50 rounded-2xl p-4 space-y-3 animate-fadeIn shadow-lg">
-              <div className="flex items-center justify-between text-xs font-bold text-white border-b border-emerald-500/30 pb-2">
-                <span className="flex items-center gap-1.5 text-emerald-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <div className="bg-black/30 border border-white/25 rounded-2xl p-4 space-y-3 animate-fadeIn shadow-lg">
+              <div className="flex items-center justify-between text-xs font-bold text-white border-b border-white/20 pb-2">
+                <span className="flex items-center gap-1.5 text-white">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                   Pratinjau Teks Al-Qur'an Otentik
                 </span>
-                <span className="text-[11px] bg-emerald-950 text-emerald-200 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-bold">
+                <span className="text-[11px] bg-black/40 text-emerald-200 border border-white/20 px-2.5 py-0.5 rounded-full font-bold">
                   Skor Awal: 5/10
                 </span>
               </div>
 
               {/* First verse preview */}
-              <div className="bg-[#0F382B] p-4 rounded-xl border border-emerald-500/40 shadow-inner">
-                <div className="flex items-center justify-between text-[11px] text-emerald-200/90 mb-1.5">
-                  <span className="font-semibold text-white">
+              <div className="bg-black/30 p-4 rounded-xl border border-white/20 shadow-inner">
+                <div className="flex items-center justify-between text-[11px] text-emerald-100 mb-1.5 font-semibold">
+                  <span className="text-white">
                     Ayat Pertama ({collection.name} : {firstVerseNum})
                   </span>
-                  <span className="bg-black/30 px-2 py-0.5 rounded text-emerald-300">
+                  <span className="bg-black/40 px-2 py-0.5 rounded text-emerald-200">
                     Juz {firstVerseData.juzNumber || '-'}
                   </span>
                 </div>
                 <p
-                  className="font-quran text-lg sm:text-xl text-white leading-loose text-right drop-shadow-2xs"
+                  className="font-quran text-lg sm:text-xl text-white leading-loose text-right drop-shadow-xs"
                   dir="rtl"
                 >
                   {formatVerseWithMarker(firstVerseData.arabicText, firstVerseNum)}
@@ -223,17 +223,17 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
               </div>
 
               {/* Next verse preview */}
-              <div className="bg-[#0F382B] p-4 rounded-xl border border-emerald-500/40 shadow-inner">
-                <div className="flex items-center justify-between text-[11px] text-emerald-200/90 mb-1.5">
-                  <span className="font-semibold text-white">
+              <div className="bg-black/30 p-4 rounded-xl border border-white/20 shadow-inner">
+                <div className="flex items-center justify-between text-[11px] text-emerald-100 mb-1.5 font-semibold">
+                  <span className="text-white">
                     Ayat Selanjutnya ({collection.name} : {nextVerseNum})
                   </span>
-                  <span className="bg-black/30 px-2 py-0.5 rounded text-emerald-300">
+                  <span className="bg-black/40 px-2 py-0.5 rounded text-emerald-200">
                     Juz {nextVerseData.juzNumber || '-'}
                   </span>
                 </div>
                 <p
-                  className="font-quran text-lg sm:text-xl text-white leading-loose text-right drop-shadow-2xs"
+                  className="font-quran text-lg sm:text-xl text-white leading-loose text-right drop-shadow-xs"
                   dir="rtl"
                 >
                   {formatVerseWithMarker(nextVerseData.arabicText, nextVerseNum)}
@@ -243,18 +243,18 @@ export const AddTransitionModal: React.FC<AddTransitionModalProps> = ({
           )}
 
           {/* Actions */}
-          <div className="pt-3 border-t border-emerald-500/30 flex items-center justify-end gap-3">
+          <div className="pt-3 border-t border-white/20 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-emerald-500/40 text-emerald-200 hover:bg-[#08221A] hover:text-white text-sm font-semibold transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-white/30 text-white hover:bg-black/40 text-sm font-semibold transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={!isValidPair || isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold transition-all shadow-lg shadow-black/40 active:scale-95 flex items-center gap-2 border border-emerald-400/30"
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#21735A] to-[#1A5C47] hover:from-[#29876A] hover:to-[#206E55] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold transition-all shadow-lg shadow-black/40 active:scale-95 flex items-center gap-2 border border-[#43B893]/70"
             >
               <Sparkles className="w-4 h-4 text-emerald-200" />
               {isSubmitting ? 'Menyimpan...' : 'Simpan Transisi'}
