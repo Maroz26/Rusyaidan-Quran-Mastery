@@ -37,7 +37,6 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDetailTransition, setSelectedDetailTransition] = useState<VerseTransition | null>(null);
-
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
   useEffect(() => {
@@ -111,17 +110,17 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-fadeIn">
-      {/* Top Banner / Summary */}
-      <div className="bg-white rounded-3xl p-6 border border-emerald-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Banner / Summary - Dark Emerald */}
+      <div className="bg-[#0B251D] rounded-3xl p-6 border border-emerald-800/60 shadow-xl shadow-black/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 mb-1">
-            <Layers className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-1">
+            <Layers className="w-4 h-4 text-emerald-400" />
             <span>Koleksi Surah {collection.referenceNumber}</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-emerald-950">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-emerald-100">
             Daftar Transisi Ayat — {collection.name}
           </h2>
-          <p className="text-xs sm:text-sm text-stone-500 mt-1">
+          <p className="text-xs sm:text-sm text-emerald-400/80 mt-1">
             {transitions.length} pasang transisi terdaftar
             {avgScore && ` • Rata-rata kekuatan hafalan: ${avgScore}/10`}
           </p>
@@ -131,16 +130,16 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
           {transitions.length > 0 && (
             <button
               onClick={onNavigateRandom}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100/80 border border-emerald-200 text-sm font-bold transition-all active:scale-95 shadow-xs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#071F17] text-emerald-200 hover:bg-[#113B2E] hover:text-white border border-emerald-700/60 text-sm font-bold transition-all active:scale-95 shadow-sm"
             >
-              <Shuffle className="w-4 h-4 text-emerald-700" />
+              <Shuffle className="w-4 h-4 text-emerald-400" />
               <span>Mulai Acak</span>
             </button>
           )}
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold transition-all active:scale-95 shadow-md shadow-emerald-800/15"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-bold transition-all active:scale-95 shadow-lg shadow-emerald-950/40"
           >
             <Plus className="w-4 h-4" />
             <span>+ Tambah Ayat</span>
@@ -150,20 +149,20 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
 
       {/* Main List or Empty State */}
       {loading ? (
-        <div className="p-12 text-center text-stone-400">
-          <div className="animate-spin w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full mx-auto mb-3" />
+        <div className="p-12 text-center text-emerald-400/60">
+          <div className="animate-spin w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full mx-auto mb-3" />
           <p className="text-sm">Memuat data transisi...</p>
         </div>
       ) : transitions.length === 0 ? (
         /* Empty State */
-        <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-emerald-200/80 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto shadow-inner">
+        <div className="bg-[#0B251D]/70 rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-emerald-800/80 space-y-4 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-[#071F17] border border-emerald-800/80 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
             <BookOpen className="w-8 h-8" />
           </div>
 
           <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-bold text-emerald-950">Belum Ada Transisi Terdaftar</h3>
-            <p className="text-xs sm:text-sm text-stone-500 mt-1 leading-relaxed">
+            <h3 className="text-lg font-bold text-emerald-100">Belum Ada Transisi Terdaftar</h3>
+            <p className="text-xs sm:text-sm text-emerald-300/80 mt-1 leading-relaxed">
               Daftarkan pasangan ayat berurutan (contoh: {collection.name} 36 → 37) yang ingin Anda latih dan
               evaluasi secara berkala.
             </p>
@@ -172,7 +171,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-md shadow-emerald-800/10 transition-all active:scale-95 flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-950/40 transition-all active:scale-95 flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               + Daftarkan Ayat Sekarang
@@ -181,9 +180,9 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
             {collection.referenceNumber === 7 && (
               <button
                 onClick={() => handleQuickSeed(36)}
-                className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-[#071F17] hover:bg-[#113B2E] text-emerald-200 border border-emerald-700/60 text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5"
               >
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                 Isi Contoh Cepat (36 → 37)
               </button>
             )}
@@ -191,9 +190,9 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
             {collection.referenceNumber === 9 && (
               <button
                 onClick={() => handleQuickSeed(1)}
-                className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-[#071F17] hover:bg-[#113B2E] text-emerald-200 border border-emerald-700/60 text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5"
               >
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                 Isi Contoh Cepat (1 → 2)
               </button>
             )}
@@ -219,41 +218,41 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
               <div
                 key={trans.id}
                 onClick={() => setSelectedDetailTransition(trans)}
-                className="group bg-white rounded-2xl p-5 border border-emerald-100/90 hover:border-emerald-300 shadow-xs hover:shadow-md hover:shadow-emerald-950/5 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                className="group bg-[#0B251D] hover:bg-[#0E2E24] rounded-2xl p-5 border border-emerald-800/60 hover:border-emerald-500/80 shadow-md shadow-black/30 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
                 {/* Item Top: Header & Score */}
-                <div className="flex items-center justify-between pb-3 border-b border-emerald-50 gap-3">
+                <div className="flex items-center justify-between pb-3 border-b border-emerald-800/40 gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-emerald-950 text-base">
+                    <span className="font-extrabold text-emerald-100 text-base group-hover:text-emerald-300 transition-colors">
                       {collection.name} {trans.firstVerseNumber} → {trans.nextVerseNumber}
                     </span>
-                    <span className="text-[11px] text-stone-400 font-medium">
+                    <span className="text-[11px] text-emerald-400/60 font-medium">
                       (Juz {firstVerse?.juzNumber || '-'})
                     </span>
                   </div>
 
                   {/* Memorization Score Controls */}
                   <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center bg-emerald-50 border border-emerald-200 rounded-xl p-1 gap-1.5 shadow-2xs">
+                    <div className="flex items-center bg-[#071F17] border border-emerald-800/80 rounded-xl p-1 gap-1.5 shadow-inner">
                       <button
                         onClick={(e) => handleScoreChange(trans.id, -1, e)}
                         disabled={trans.memorizationScore <= 1}
-                        className="w-6 h-6 rounded-lg bg-white text-emerald-800 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center justify-center transition-colors shadow-2xs"
+                        className="w-6 h-6 rounded-lg bg-emerald-900/80 text-emerald-200 hover:bg-emerald-700 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-xs flex items-center justify-center transition-colors border border-emerald-700/50"
                         title="Turunkan skor hafalan"
                       >
                         -
                       </button>
 
-                      <span className="font-extrabold text-xs text-emerald-950 min-w-10 text-center flex items-center justify-center gap-0.5">
-                        <Award className="w-3 h-3 text-emerald-600" />
+                      <span className="font-extrabold text-xs text-emerald-100 min-w-10 text-center flex items-center justify-center gap-0.5">
+                        <Award className="w-3 h-3 text-emerald-400" />
                         {trans.memorizationScore}
-                        <span className="text-stone-400 font-normal text-[10px]">/10</span>
+                        <span className="text-emerald-500/70 font-normal text-[10px]">/10</span>
                       </span>
 
                       <button
                         onClick={(e) => handleScoreChange(trans.id, 1, e)}
                         disabled={trans.memorizationScore >= 10}
-                        className="w-6 h-6 rounded-lg bg-white text-emerald-800 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center justify-center transition-colors shadow-2xs"
+                        className="w-6 h-6 rounded-lg bg-emerald-900/80 text-emerald-200 hover:bg-emerald-700 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-xs flex items-center justify-center transition-colors border border-emerald-700/50"
                         title="Tingkatkan skor hafalan"
                       >
                         +
@@ -268,7 +267,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
                           e
                         )
                       }
-                      className="p-2 text-stone-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                      className="p-2 text-emerald-600 hover:text-rose-400 hover:bg-rose-950/40 rounded-xl transition-colors"
                       title="Hapus transisi"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -279,7 +278,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
                 {/* Item Body: Quranic Arabic Full Verse 1 + Preview Verse 2 */}
                 <div className="py-3">
                   <p
-                    className="font-quran text-lg sm:text-xl text-stone-900 leading-[2.1] text-right font-normal"
+                    className="font-quran text-lg sm:text-xl text-emerald-50 leading-[2.2] text-right font-normal"
                     dir="rtl"
                   >
                     {combinedPreview}
@@ -287,11 +286,11 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
                 </div>
 
                 {/* Item Footer */}
-                <div className="pt-2 flex items-center justify-between text-xs text-emerald-700/80 font-medium">
-                  <span className="text-[11px] text-stone-400 group-hover:text-emerald-700 transition-colors">
+                <div className="pt-2 flex items-center justify-between text-xs text-emerald-400/80 font-medium border-t border-emerald-900/30">
+                  <span className="text-[11px] text-emerald-500/70 group-hover:text-emerald-300 transition-colors">
                     Klik untuk membuka teks lengkap kedua ayat
                   </span>
-                  <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  <span className="flex items-center gap-1 text-emerald-300 group-hover:translate-x-1 transition-transform">
                     <span>Lihat Detail</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </span>

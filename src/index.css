@@ -8,12 +8,28 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: #F7FBF8;
-    color: #102A22;
+    background-color: #061C14;
+    color: #ECFDF5;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom dark emerald scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #061C14;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #164E3D;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1F6B54;
   }
 }
 

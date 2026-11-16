@@ -64,7 +64,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FBF8] text-[#102A22] flex flex-col font-sans selection:bg-emerald-200 selection:text-emerald-950">
+    <div className="min-h-screen bg-[#061C14] text-[#ECFDF5] flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-100">
       <Navbar
         currentScreen={currentScreen}
         onNavigateHome={() => setCurrentScreen({ type: 'home' })}
@@ -74,9 +74,9 @@ export function App() {
 
       <main className="flex-1 pb-16">
         {loading ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-stone-400">
-            <div className="animate-spin w-9 h-9 border-3 border-emerald-600 border-t-transparent rounded-full mb-3" />
-            <p className="text-sm font-medium">Memuat data Rusyaidan Qur'an Mastery...</p>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-emerald-300/60">
+            <div className="animate-spin w-9 h-9 border-3 border-emerald-500 border-t-transparent rounded-full mb-3" />
+            <p className="text-sm font-medium text-emerald-200/80">Memuat data Rusyaidan Qur'an Mastery...</p>
           </div>
         ) : currentScreen.type === 'home' ? (
           <Home
@@ -125,11 +125,11 @@ export function App() {
             />
           ) : null
         ) : (
-          <div className="max-w-md mx-auto p-8 text-center text-stone-500">
+          <div className="max-w-md mx-auto p-8 text-center text-emerald-300/70 bg-[#0C2B21] border border-emerald-800/60 rounded-3xl mt-12 shadow-xl">
             <p>Koleksi surah tidak ditemukan.</p>
             <button
               onClick={() => setCurrentScreen({ type: 'home' })}
-              className="mt-3 px-4 py-2 bg-emerald-700 text-white rounded-xl text-sm font-semibold"
+              className="mt-4 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-sm font-semibold transition-all shadow-md"
             >
               Kembali ke Beranda
             </button>
@@ -137,12 +137,12 @@ export function App() {
         )}
       </main>
 
-      {/* Elegant Footer */}
-      <footer className="border-t border-emerald-100 bg-white/70 py-6 text-center text-xs text-stone-400 space-y-1">
-        <p className="font-semibold text-emerald-950">
+      {/* Elegant Dark Emerald Footer */}
+      <footer className="border-t border-emerald-900/60 bg-[#04140E]/90 backdrop-blur-md py-6 text-center text-xs text-emerald-400/70 space-y-1">
+        <p className="font-semibold text-emerald-200 tracking-wide">
           Rusyaidan Qur'an Mastery
         </p>
-        <p className="text-[11px] text-stone-500">
+        <p className="text-[11px] text-emerald-500/60">
           Teks Al-Qur'an Otentik bersumber dari Tanzil Project (Medina Mushaf Uthmani Hafs). Penyimpanan data lokal via IndexedDB.
         </p>
       </footer>
