@@ -66,66 +66,66 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* About Modal in Dark Emerald */}
+      {/* About Modal */}
       {showAboutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0B251D] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-emerald-700/50 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-emerald-800/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-950/60 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-emerald-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-emerald-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center shadow-sm">
-                  <Sparkles className="w-4 h-4 text-emerald-200" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center">
+                  <Sparkles className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-emerald-100 text-lg">Tentang Rusyaidan Qur'an Mastery</h3>
+                <h3 className="font-bold text-emerald-950 text-lg">Tentang Rusyaidan Qur'an Mastery</h3>
               </div>
               <button
                 onClick={() => setShowAboutModal(false)}
-                className="p-1 rounded-lg text-emerald-400 hover:text-emerald-200 hover:bg-emerald-900/50 transition-colors"
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="mt-4 space-y-4 text-sm text-emerald-200/90 leading-relaxed">
+            <div className="mt-4 space-y-4 text-sm text-stone-600 leading-relaxed">
               <p>
-                <strong className="text-emerald-100">Rusyaidan Qur'an Mastery</strong> adalah aplikasi web mandiri lokal-first untuk membantu penghafal Al-Qur'an mengevaluasi dan memperkuat hafalan dengan fokus utama:
+                <strong className="text-emerald-950">Rusyaidan Qur'an Mastery</strong> adalah aplikasi web mandiri lokal-first untuk membantu penghafal Al-Qur'an mengevaluasi dan memperkuat hafalan dengan fokus utama:
               </p>
 
-              <div className="bg-[#071F17] p-3.5 rounded-xl border border-emerald-800/60 space-y-2">
+              <div className="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-100 space-y-2">
                 <div className="flex items-start gap-2">
                   <span className="inline-block px-1.5 py-0.5 rounded text-[11px] font-bold bg-emerald-700 text-white mt-0.5">1</span>
                   <div>
-                    <strong className="text-emerald-100">Verse Transition (Transisi Ayat):</strong>
-                    <p className="text-emerald-300/80 text-xs mt-0.5">Kemampuan menyambung dari satu ayat ke ayat berikutnya secara tepat, lancar, dan mantap.</p>
+                    <strong className="text-emerald-950">Verse Transition (Transisi Ayat):</strong>
+                    <p className="text-emerald-800 text-xs mt-0.5">Kemampuan menyambung dari satu ayat ke ayat berikutnya secara tepat, lancar, dan mantap.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-2 pt-2 border-t border-emerald-900/60">
-                  <span className="inline-block px-1.5 py-0.5 rounded text-[11px] font-bold bg-emerald-900 text-emerald-300 mt-0.5 border border-emerald-700/40">2</span>
+                <div className="flex items-start gap-2 pt-2 border-t border-emerald-200/50">
+                  <span className="inline-block px-1.5 py-0.5 rounded text-[11px] font-bold bg-emerald-200 text-emerald-900 mt-0.5">2</span>
                   <div>
-                    <strong className="text-emerald-100">Verse Retention (Retensi Ayat):</strong>
-                    <p className="text-emerald-300/80 text-xs mt-0.5">Kemampuan mengingat keseluruhan ayat dengan akurat (Segera Hadir / Coming Soon).</p>
+                    <strong className="text-emerald-950">Verse Retention (Retensi Ayat):</strong>
+                    <p className="text-emerald-800 text-xs mt-0.5">Kemampuan mengingat keseluruhan ayat dengan akurat (Segera Hadir / Coming Soon).</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-emerald-100 mb-1">Sumber Data Al-Qur'an Otentik:</h4>
-                <p className="text-xs text-emerald-300/80">
-                  Teks Arab bersumber dari <strong className="text-emerald-200">Tanzil Project (Medina Mushaf Uthmani Hafs)</strong> dengan harakat lengkap, rasm Uthmani, dan tanda waqaf terverifikasi.
+                <h4 className="font-semibold text-emerald-950 mb-1">Sumber Data Al-Qur'an Otentik:</h4>
+                <p className="text-xs text-stone-500">
+                  Teks Arab bersumber dari <strong className="text-emerald-900">Tanzil Project (Medina Mushaf Uthmani Hafs)</strong> dengan harakat lengkap, rasm Uthmani, dan tanda waqaf terverifikasi.
                 </p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-emerald-100 mb-1">Simulasi Perekaman &amp; Penilaian Mandiri:</h4>
-                <p className="text-xs text-emerald-300/80">
-                  Fitur perekaman merupakan simulasi visual interaktif (tanpa mikrofon riil). Skor kekuatan hafalan (1–10) ditentukan secara mandiri oleh pengguna dan tersimpan aman di peramban Anda melalui <strong className="text-emerald-200">IndexedDB</strong>.
+                <h4 className="font-semibold text-emerald-950 mb-1">Simulasi Perekaman &amp; Penilaian Mandiri:</h4>
+                <p className="text-xs text-stone-500">
+                  Fitur perekaman merupakan simulasi visual interaktif (tanpa mikrofon riil). Skor kekuatan hafalan (1–10) ditentukan secara mandiri oleh pengguna dan tersimpan aman di peramban Anda melalui <strong className="text-emerald-900">IndexedDB</strong>.
                 </p>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-emerald-800/50 flex justify-end">
+            <div className="mt-6 pt-4 border-t border-emerald-100 flex justify-end">
               <button
                 onClick={() => setShowAboutModal(false)}
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-md shadow-emerald-950/40"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold transition-colors shadow-xs"
               >
                 Tutup
               </button>

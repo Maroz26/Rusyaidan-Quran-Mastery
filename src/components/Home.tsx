@@ -61,46 +61,44 @@ export const Home: React.FC<HomeProps> = ({
 
   return (
     <div className="space-y-8 animate-fadeIn max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      {/* Hero Welcome Banner - Elegant Medium Jade with Deep Depth */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1E6851] via-[#257C61] to-[#185542] text-white p-7 sm:p-10 shadow-2xl shadow-black/50 border-2 border-[#3EAB88]/60">
-        <div className="absolute -right-12 -bottom-16 w-64 h-64 rounded-full bg-emerald-300/15 blur-3xl pointer-events-none" />
-        <div className="absolute right-6 top-6 opacity-15 pointer-events-none text-emerald-100">
-          <BookOpen className="w-52 h-52" />
+      {/* Hero Welcome Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 text-white p-7 sm:p-10 shadow-xl shadow-black/40 border border-emerald-600/30">
+        <div className="absolute -right-12 -bottom-16 w-64 h-64 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute right-6 top-6 opacity-10 pointer-events-none">
+          <BookOpen className="w-52 h-52 text-white" />
         </div>
 
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/30 backdrop-blur-xs border border-white/20 text-emerald-100 text-xs font-bold mb-4 tracking-wide shadow-md">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600/50 border border-emerald-400/30 text-emerald-100 text-xs font-semibold mb-4 tracking-wide shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
             Metode Mutqin Mandiri
           </div>
 
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight drop-shadow-sm">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Rusyaidan Qur'an Mastery
           </h2>
 
-          <p className="mt-3 text-emerald-50 text-sm sm:text-base leading-relaxed font-normal">
+          <p className="mt-3 text-emerald-100/90 text-sm sm:text-base leading-relaxed font-normal">
             Evaluasi dan perkuat ketahanan hafalan Al-Qur'an melalui latihan{' '}
-            <span className="font-bold text-white underline decoration-emerald-200/60 underline-offset-2">
-              Transisi Ayat (Verse Transition)
-            </span>{' '}
+            <span className="font-semibold text-emerald-200">Transisi Ayat (Verse Transition)</span>{' '}
             berkelanjutan dengan tolok ukur skor mandiri.
           </p>
 
-          {/* Quick Metrics Bar with Distinct Elevated Stat Pods */}
-          <div className="mt-6 pt-5 border-t border-white/20 grid grid-cols-3 gap-3 sm:gap-4">
-            <div className="bg-black/30 backdrop-blur-xs p-3 sm:p-3.5 rounded-2xl border border-white/20 text-center shadow-inner">
-              <div className="text-xl sm:text-2xl font-extrabold text-white">{collections.length}</div>
-              <div className="text-[11px] sm:text-xs text-emerald-100 font-semibold mt-0.5">Koleksi Aktif</div>
+          {/* Quick Metrics Bar */}
+          <div className="mt-6 pt-5 border-t border-emerald-600/50 grid grid-cols-3 gap-4">
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-white">{collections.length}</div>
+              <div className="text-[11px] sm:text-xs text-emerald-200/80 font-medium">Koleksi Aktif</div>
             </div>
-            <div className="bg-black/30 backdrop-blur-xs p-3 sm:p-3.5 rounded-2xl border border-white/20 text-center shadow-inner">
-              <div className="text-xl sm:text-2xl font-extrabold text-white">{totalTransitions}</div>
-              <div className="text-[11px] sm:text-xs text-emerald-100 font-semibold mt-0.5">Transisi Terdaftar</div>
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-white">{totalTransitions}</div>
+              <div className="text-[11px] sm:text-xs text-emerald-200/80 font-medium">Transisi Terdaftar</div>
             </div>
-            <div className="bg-black/30 backdrop-blur-xs p-3 sm:p-3.5 rounded-2xl border border-white/20 text-center shadow-inner">
-              <div className="text-xl sm:text-2xl font-extrabold text-white">
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-white">
                 {overallAvg !== null ? `${overallAvg} / 10` : '-'}
               </div>
-              <div className="text-[11px] sm:text-xs text-emerald-100 font-semibold mt-0.5">Rata-rata Skor</div>
+              <div className="text-[11px] sm:text-xs text-emerald-200/80 font-medium">Rata-rata Skor</div>
             </div>
           </div>
         </div>
@@ -121,14 +119,14 @@ export const Home: React.FC<HomeProps> = ({
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-[#21735A] to-[#1A5C47] hover:from-[#29876A] hover:to-[#206E55] text-white border border-[#43B893]/60 transition-all active:scale-95 shadow-md shadow-black/40"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-600/60 transition-all active:scale-95 shadow-md shadow-black/40"
           >
             <Plus className="w-4 h-4 text-emerald-200" />
             <span>Tambah Surah</span>
           </button>
         </div>
 
-        {/* Surah Cards Grid with Medium Jade Contrast (Not dark emerald, not overly bright) */}
+        {/* Surah Cards Grid - Restored to Initial Clean Emerald Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {collections.map((col) => {
             const stats = statsMap[col.id] || { count: 0, avgScore: null };
@@ -139,36 +137,36 @@ export const Home: React.FC<HomeProps> = ({
               <div
                 key={col.id}
                 onClick={() => onSelectCollection(col.id)}
-                className="group relative bg-gradient-to-br from-[#1F6E56] via-[#257D62] to-[#1A5B47] hover:from-[#278368] hover:via-[#2D8F72] hover:to-[#206B54] rounded-2xl p-6 border-2 border-[#39A986]/50 hover:border-[#52D2AA] shadow-2xl shadow-black/50 hover:shadow-black/70 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                className="group relative bg-white rounded-2xl p-6 border border-emerald-100/90 hover:border-emerald-300 shadow-md hover:shadow-xl hover:shadow-black/30 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
                 {/* Top Badge & Number */}
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#124636] to-[#0A2E23] text-white font-extrabold text-lg flex items-center justify-center border border-[#42BD97]/60 group-hover:scale-105 transition-transform shadow-md shadow-black/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-200/60 text-emerald-800 font-extrabold text-base flex items-center justify-center border border-emerald-300/40 group-hover:scale-105 transition-transform shadow-xs">
                       {col.referenceNumber}
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-white group-hover:text-emerald-100 transition-colors">
+                      <h4 className="text-lg font-bold text-emerald-950 group-hover:text-emerald-700 transition-colors">
                         {col.name}
                       </h4>
-                      <p className="text-xs text-emerald-100/90 font-medium mt-0.5">
+                      <p className="text-xs text-stone-500 font-medium">
                         Surah ke-{col.referenceNumber} • {col.numberOfVerses ? `${col.numberOfVerses} Ayat` : ''}
                       </p>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="font-quran text-2xl sm:text-3xl font-bold text-white leading-none drop-shadow-xs" dir="rtl">
+                    <span className="font-quran text-2xl font-bold text-emerald-900/90 leading-none" dir="rtl">
                       {col.arabicName}
                     </span>
-                    <div className="mt-1.5">
+                    <div className="mt-1">
                       {isAlAraf && (
-                        <span className="text-[10px] bg-black/35 text-white border border-white/20 font-bold px-2.5 py-0.5 rounded-full shadow-2xs">
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full">
                           Juz 8–9
                         </span>
                       )}
                       {isAtTawbah && (
-                        <span className="text-[10px] bg-black/35 text-white border border-white/20 font-bold px-2.5 py-0.5 rounded-full shadow-2xs">
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full">
                           Juz 10–11
                         </span>
                       )}
@@ -177,38 +175,37 @@ export const Home: React.FC<HomeProps> = ({
                 </div>
 
                 {/* Stats Footer inside Card */}
-                <div className="mt-6 pt-4 border-t border-white/20 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-emerald-50 flex items-center justify-between">
                   <div className="flex items-center gap-4 text-xs">
                     <div>
-                      <span className="text-emerald-100/80 block text-[10px] uppercase font-bold tracking-wider">
+                      <span className="text-stone-400 block text-[10px] uppercase font-semibold">
                         Transisi Terdaftar
                       </span>
-                      <span className="font-extrabold text-white text-base">
+                      <span className="font-bold text-emerald-950 text-sm">
                         {stats.count} Pasang
                       </span>
                     </div>
 
-                    <div className="h-6 w-px bg-white/20" />
+                    <div className="h-6 w-px bg-emerald-100" />
 
                     <div>
-                      <span className="text-emerald-100/80 block text-[10px] uppercase font-bold tracking-wider">
+                      <span className="text-stone-400 block text-[10px] uppercase font-semibold">
                         Rata-rata Skor
                       </span>
-                      <span className="font-extrabold text-white text-base flex items-center gap-1">
+                      <span className="font-bold text-emerald-950 text-sm flex items-center gap-1">
                         {stats.avgScore !== null ? (
                           <>
-                            <Award className="w-4 h-4 text-emerald-200" />
-                            <span className="text-white">{stats.avgScore}</span>{' '}
-                            <span className="text-emerald-100/80 font-normal text-xs">/ 10</span>
+                            <Award className="w-3.5 h-3.5 text-emerald-600" />
+                            {stats.avgScore} <span className="text-stone-400 font-normal text-xs">/ 10</span>
                           </>
                         ) : (
-                          <span className="text-emerald-100/70 font-normal text-xs">Belum ada</span>
+                          <span className="text-stone-400 font-normal">Belum ada</span>
                         )}
                       </span>
                     </div>
                   </div>
 
-                  <div className="w-9 h-9 rounded-full bg-[#124636] group-hover:bg-white text-emerald-200 group-hover:text-emerald-950 flex items-center justify-center transition-all duration-200 border border-[#42BD97]/60 shadow-md">
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 group-hover:bg-emerald-700 text-emerald-700 group-hover:text-white flex items-center justify-center transition-colors">
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
@@ -218,14 +215,14 @@ export const Home: React.FC<HomeProps> = ({
         </div>
       </div>
 
-      {/* Guide Note Box with Distinct Elevated Medium Jade Tone */}
-      <div className="bg-gradient-to-r from-[#1B5E4A] to-[#154E3D] border-2 border-[#3EAB88]/50 rounded-2xl p-5 flex items-start gap-4 shadow-xl shadow-black/40">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#124636] to-[#0A2E23] text-white flex items-center justify-center shrink-0 mt-0.5 border border-[#48BFA0]/60 shadow-md">
-          <TrendingUp className="w-5 h-5 text-emerald-200" />
+      {/* Guide Note Box */}
+      <div className="bg-emerald-50/90 border border-emerald-200/80 rounded-2xl p-5 flex items-start gap-4 shadow-md text-emerald-950">
+        <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+          <TrendingUp className="w-5 h-5" />
         </div>
-        <div className="text-xs sm:text-sm text-white leading-relaxed">
-          <h5 className="font-bold text-white mb-1">Panduan Penguatan Hafalan:</h5>
-          <p className="text-emerald-100/90">
+        <div className="text-xs sm:text-sm text-emerald-950 leading-relaxed">
+          <h5 className="font-bold text-emerald-900 mb-1">Panduan Penguatan Hafalan:</h5>
+          <p className="text-stone-600">
             Daftarkan pasangan ayat yang sering membingungkan atau rawan terlupa transisinya. Lakukan latihan
             acak secara berkala dan perbarui skor hafalan (1–10) sesuai kemantapan mutqin Anda.
           </p>
