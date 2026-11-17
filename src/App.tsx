@@ -6,7 +6,7 @@ import { Home } from './components/Home';
 import { SurahDetail } from './components/SurahDetail';
 import { VerseTransitionList } from './components/VerseTransitionList';
 import { RandomPractice } from './components/RandomPractice';
-import { useState, useEffect } from 'react';
+
 import type { User } from 'firebase/auth';
 
 import {
@@ -32,21 +32,42 @@ export function App() {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-    getCollections()
-      .then((data) => {
-        if (isMounted) {
-          setCollections(data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching collections:', err);
-        if (isMounted) {
-          setLoadError(err instanceof Error ? err.message : 'Kesalahan tidak diketahui.');
-          setLoading(false);
-        }
-      });
+  if (authLoading) return;
+
+  if (!user) {
+    setLoading(false);
+    return;
+  }
+
+  let isMounted = true;
+
+  setLoading(true);
+  setLoadError(null);
+
+  getCollections()
+    .then((data) => {
+      if (isMounted) {
+        setCollections(data);
+        setLoading(false);
+      }
+    })
+    .catch((err) => {
+      console.error('Error fetching collections:', err);
+
+      if (isMounted) {
+        setLoadError(
+          err instanceof Error
+            ? err.message
+            : 'Kesalahan tidak diketahui.'
+        );
+        setLoading(false);
+      }
+    });
+
+  return () => {
+    isMounted = false;
+  };
+}, [user, authLoading]);
 
     return () => {
       isMounted = false;
