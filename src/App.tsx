@@ -112,7 +112,7 @@ export function App() {
   // ==========================================
 
   const selectedCollection =
-    currentScreen.type !== 'home'
+    'collectionId' in currentScreen
       ? collections.find(
           (collection) => collection.id === currentScreen.collectionId
         )
@@ -129,6 +129,8 @@ export function App() {
         type: 'surah-detail',
         collectionId: currentScreen.collectionId,
       });
+    } else if (currentScreen.type === 'juz-transition-list') {
+      setCurrentScreen({ type: 'home' });
     }
   };
 
@@ -144,6 +146,10 @@ export function App() {
       return selectedCollection
         ? selectedCollection.name
         : 'Detail Surah';
+    }
+
+    if (currentScreen.type === 'juz-transition-list') {
+      return 'Beranda';
     }
 
     return 'Kembali';
@@ -267,7 +273,20 @@ export function App() {
                 collectionId,
               })
             }
+            onSelectJuz={(juzNumber) =>
+              setCurrentScreen({
+                type: 'juz-transition-list',
+                juzNumber,
+              })
+            }
             onAddCollection={handleAddCollection}
+          />
+
+        ) : currentScreen.type === 'juz-transition-list' ? (
+
+          <VerseTransitionList
+            collections={collections}
+            juzNumber={currentScreen.juzNumber}
           />
 
         ) : selectedCollection ? (

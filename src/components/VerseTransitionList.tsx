@@ -18,6 +18,7 @@ import {
 } from '../services/dbService';
 import {
   getVerse,
+  getSurah,
   toArabicNumerals,
   getShortArabicPreview,
 } from '../services/quranService';
@@ -25,12 +26,16 @@ import { AddTransitionModal } from './AddTransitionModal';
 import { VerseDetailModal } from './VerseDetailModal';
 
 interface VerseTransitionListProps {
-  collection: StudyCollection;
-  onNavigateRandom: () => void;
+  collection?: StudyCollection;
+  collections?: StudyCollection[];
+  juzNumber?: number;
+  onNavigateRandom?: () => void;
 }
 
 export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
   collection,
+  collections,
+  juzNumber,
   onNavigateRandom,
 }) => {
   const [transitions, setTransitions] = useState<VerseTransition[]>([]);
@@ -39,13 +44,25 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDetailTransition, setSelectedDetailTransition] = useState<VerseTransition | null>(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [scoreFilter, setScoreFilter] = useState<'all' | number>('all');
 
   useEffect(() => {
     let isMounted = true;
-    getTransitions(collection.id)
+    getTransitions(collection?.id)
       .then((list) => {
         if (isMounted) {
-          setTransitions(list);
+          setTransitions(
+            (juzNumber === undefined
+              ? list
+              : list.filter(
+                  (transition) =>
+                    getVerse(transition.surahNumber, transition.firstVerseNumber)?.juzNumber === juzNumber,
+                )
+            ).sort(
+              (a, b) =>
+                a.surahNumber - b.surahNumber || a.firstVerseNumber - b.firstVerseNumber,
+            ),
+          );
           setLoadError(null);
           setLoading(false);
         }
@@ -61,7 +78,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [collection.id, reloadTrigger]);
+  }, [collection?.id, juzNumber, reloadTrigger]);
 
   const refreshData = () => setReloadTrigger((prev) => prev + 1);
 
@@ -80,6 +97,9 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
       setTransitions((prev) =>
         prev.map((t) => (t.id === transitionId ? { ...t, memorizationScore: newScore } : t))
       );
+      if (scoreFilter === target.memorizationScore) {
+        setScoreFilter('all');
+      }
     } catch (error) {
       window.alert(error instanceof Error ? error.message : 'Gagal menyimpan skor ke Firestore.');
     }
@@ -99,6 +119,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
 
   // Helper for quick seed example (e.g. 36 -> 37 for Al-A'raf)
   const handleQuickSeed = async (firstVerse: number) => {
+    if (!collection) return;
     const nextVerse = firstVerse + 1;
     const newTrans: VerseTransition = {
       id: `trans-${collection.id}-${firstVerse}-${nextVerse}-${Date.now()}`,
@@ -118,10 +139,20 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
     }
   };
 
+  const availableScores = [...new Set(transitions.map((transition) => transition.memorizationScore))]
+    .sort((a, b) => a - b);
+  const visibleTransitions =
+    scoreFilter === 'all'
+      ? transitions
+      : transitions.filter((transition) => transition.memorizationScore === scoreFilter);
+  const selectedDetailCollection = selectedDetailTransition
+    ? collection ?? collections?.find((item) => item.id === selectedDetailTransition.collectionId)
+    : undefined;
+
   const avgScore =
-    transitions.length > 0
+    visibleTransitions.length > 0
       ? (
-          transitions.reduce((sum, t) => sum + t.memorizationScore, 0) / transitions.length
+          visibleTransitions.reduce((sum, t) => sum + t.memorizationScore, 0) / visibleTransitions.length
         ).toFixed(1)
       : null;
 
@@ -132,19 +163,25 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 mb-1">
             <Layers className="w-4 h-4" />
-            <span>Koleksi Surah {collection.referenceNumber}</span>
+            <span>
+              {collection
+                ? `Koleksi Surah ${collection.referenceNumber}`
+                : `Pengelompokan Juz ${juzNumber}`}
+            </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-emerald-950">
-            Daftar Transisi Ayat — {collection.name}
+            {collection
+              ? `Daftar Transisi Ayat — ${collection.name}`
+              : `Daftar Transisi Ayat — Juz ${juzNumber}`}
           </h2>
           <p className="text-xs sm:text-sm text-stone-500 mt-1">
-            {transitions.length} pasang transisi terdaftar
+            {visibleTransitions.length} dari {transitions.length} pasang transisi ditampilkan
             {avgScore && ` • Rata-rata kekuatan hafalan: ${avgScore}/10`}
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
-          {transitions.length > 0 && (
+          {onNavigateRandom && transitions.length > 0 && (
             <button
               onClick={onNavigateRandom}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100/80 border border-emerald-200 text-sm font-bold transition-all active:scale-95 shadow-xs"
@@ -154,15 +191,38 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
             </button>
           )}
 
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold transition-all active:scale-95 shadow-md shadow-emerald-950/20"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Tambah Ayat</span>
-          </button>
+          {collection && (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold transition-all active:scale-95 shadow-md shadow-emerald-950/20"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Tambah Ayat</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {!loading && !loadError && transitions.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
+          <label htmlFor="memorization-score-filter" className="text-sm font-bold text-emerald-950">
+            Filter kekuatan hafalan
+          </label>
+          <select
+            id="memorization-score-filter"
+            value={scoreFilter}
+            onChange={(event) => setScoreFilter(event.target.value === 'all' ? 'all' : Number(event.target.value))}
+            className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          >
+            <option value="all">Semua level</option>
+            {availableScores.map((score) => (
+              <option key={score} value={score}>
+                Level {score}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Main List or Empty State */}
       {loading ? (
@@ -184,21 +244,23 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
           <div className="max-w-md mx-auto">
             <h3 className="text-lg font-bold text-emerald-950">Belum Ada Transisi Terdaftar</h3>
             <p className="text-xs sm:text-sm text-stone-500 mt-1 leading-relaxed">
-              Daftarkan pasangan ayat berurutan (contoh: {collection.name} 36 → 37) yang ingin Anda latih dan
+              Daftarkan pasangan ayat berurutan (contoh: {collection?.name ?? `Juz ${juzNumber}`} 36 → 37) yang ingin Anda latih dan
               evaluasi secara berkala.
             </p>
           </div>
 
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-md shadow-emerald-800/10 transition-all active:scale-95 flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              + Daftarkan Ayat Sekarang
-            </button>
+            {collection && (
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-md shadow-emerald-800/10 transition-all active:scale-95 flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                + Daftarkan Ayat Sekarang
+              </button>
+            )}
 
-            {collection.referenceNumber === 7 && (
+            {collection?.referenceNumber === 7 && (
               <button
                 onClick={() => handleQuickSeed(36)}
                 className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5"
@@ -208,7 +270,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
               </button>
             )}
 
-            {collection.referenceNumber === 9 && (
+            {collection?.referenceNumber === 9 && (
               <button
                 onClick={() => handleQuickSeed(1)}
                 className="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5"
@@ -221,10 +283,17 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
         </div>
       ) : (
         /* Transition Items List */
+        visibleTransitions.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-emerald-200 bg-white p-10 text-center text-sm text-stone-500">
+          Tidak ada transisi dengan level kekuatan hafalan {scoreFilter}.
+        </div>
+        ) : (
         <div className="space-y-4">
-          {transitions.map((trans) => {
+          {visibleTransitions.map((trans) => {
+            const itemCollection = collection ?? collections?.find((item) => item.id === trans.collectionId);
             const firstVerse = getVerse(trans.surahNumber, trans.firstVerseNumber);
             const nextVerse = getVerse(trans.surahNumber, trans.nextVerseNumber);
+            const surahName = itemCollection?.name ?? getSurah(trans.surahNumber)?.name ?? `Surah ${trans.surahNumber}`;
 
             const firstArabic = firstVerse ? firstVerse.arabicText : '';
             const nextPreview = nextVerse ? getShortArabicPreview(nextVerse.arabicText, 6) : '';
@@ -242,7 +311,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
                 <div className="flex items-center justify-between pb-3 border-b border-emerald-50 gap-3">
                   <div className="flex items-center gap-2">
                     <span className="font-extrabold text-emerald-950 text-base">
-                      {collection.name} {trans.firstVerseNumber} → {trans.nextVerseNumber}
+                      {surahName} {trans.firstVerseNumber} → {trans.nextVerseNumber}
                     </span>
                     <span className="text-[11px] text-stone-400 font-medium">
                       (Juz {firstVerse?.juzNumber || '-'})
@@ -281,7 +350,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
                       onClick={(e) =>
                         handleDelete(
                           trans.id,
-                          `${collection.name} ${trans.firstVerseNumber} → ${trans.nextVerseNumber}`,
+                          `${surahName} ${trans.firstVerseNumber} → ${trans.nextVerseNumber}`,
                           e
                         )
                       }
@@ -317,10 +386,11 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
             );
           })}
         </div>
+        )
       )}
 
       {/* Add Transition Modal */}
-      {showAddModal && (
+      {showAddModal && collection && (
         <AddTransitionModal
           collection={collection}
           onAdd={handleAdd}
@@ -329,9 +399,9 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
       )}
 
       {/* Full 2-verse detail modal */}
-      {selectedDetailTransition && (
+      {selectedDetailTransition && selectedDetailCollection && (
         <VerseDetailModal
-          collection={collection}
+          collection={selectedDetailCollection}
           transition={selectedDetailTransition}
           onClose={() => setSelectedDetailTransition(null)}
         />

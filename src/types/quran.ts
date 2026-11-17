@@ -55,4 +55,5 @@ export type ActiveScreen =
   | { type: 'home' }
   | { type: 'surah-detail'; collectionId: string }
   | { type: 'transition-list'; collectionId: string }
+  | { type: 'juz-transition-list'; juzNumber: number }
   | { type: 'random-practice'; collectionId: string };

@@ -7,14 +7,17 @@ import {
   TrendingUp,
   Sparkles,
   Award,
+  Layers,
 } from 'lucide-react';
 import type { StudyCollection } from '../types/quran';
-import { getCollectionStats, getTransitions } from '../services/dbService';
+import { getTransitions } from '../services/dbService';
+import { getVerse } from '../services/quranService';
 import { AddCollectionModal } from './AddCollectionModal';
 
 interface HomeProps {
   collections: StudyCollection[];
   onSelectCollection: (collectionId: string) => void;
+  onSelectJuz: (juzNumber: number) => void;
   onAddCollection: (collection: StudyCollection) => Promise<void>;
 }
 
@@ -22,9 +25,16 @@ interface CollectionStatsMap {
   [collectionId: string]: { count: number; avgScore: number | null };
 }
 
+interface JuzStats {
+  count: number;
+  avgScore: number;
+  surahNames: string[];
+}
+
 export const Home: React.FC<HomeProps> = ({
   collections,
   onSelectCollection,
+  onSelectJuz,
   onAddCollection,
 }) => {
   const [statsMap, setStatsMap] = useState<CollectionStatsMap>({});
@@ -32,34 +42,86 @@ export const Home: React.FC<HomeProps> = ({
   const [totalTransitions, setTotalTransitions] = useState(0);
   const [overallAvg, setOverallAvg] = useState<number | null>(null);
   const [statsError, setStatsError] = useState<string | null>(null);
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+  const [grouping, setGrouping] = useState<'surah' | 'juz'>('surah');
+  const [juzStats, setJuzStats] = useState<Record<number, JuzStats>>({});
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadStats() {
       try {
-        const stats: CollectionStatsMap = {};
-        let totalScoreSum = 0;
+        const allTransitions = await getTransitions();
+        const collectionAggregates = new Map<string, { scoreSum: number; count: number }>();
+        const juzAggregates = new Map<number, { scoreSum: number; count: number; surahNames: Set<string> }>();
 
-        for (const col of collections) {
-          stats[col.id] = await getCollectionStats(col.id);
+        for (const transition of allTransitions) {
+          const collectionAggregate = collectionAggregates.get(transition.collectionId) ?? {
+            scoreSum: 0,
+            count: 0,
+          };
+          collectionAggregate.scoreSum += transition.memorizationScore;
+          collectionAggregate.count += 1;
+          collectionAggregates.set(transition.collectionId, collectionAggregate);
+
+          const juzNumber = getVerse(transition.surahNumber, transition.firstVerseNumber)?.juzNumber;
+          if (juzNumber === undefined) continue;
+
+          const aggregate = juzAggregates.get(juzNumber) ?? {
+            scoreSum: 0,
+            count: 0,
+            surahNames: new Set<string>(),
+          };
+          aggregate.scoreSum += transition.memorizationScore;
+          aggregate.count += 1;
+          const surahName = collections.find((item) => item.id === transition.collectionId)?.name;
+          if (surahName) aggregate.surahNames.add(surahName);
+          juzAggregates.set(juzNumber, aggregate);
         }
 
-        const allTransitions = await getTransitions();
+        const stats: CollectionStatsMap = {};
+        for (const [collectionId, aggregate] of collectionAggregates) {
+          stats[collectionId] = {
+            count: aggregate.count,
+            avgScore: Number((aggregate.scoreSum / aggregate.count).toFixed(1)),
+          };
+        }
+
+        const groupedJuzStats: Record<number, JuzStats> = {};
+        for (const [juzNumber, aggregate] of juzAggregates) {
+          groupedJuzStats[juzNumber] = {
+            count: aggregate.count,
+            avgScore: Number((aggregate.scoreSum / aggregate.count).toFixed(1)),
+            surahNames: [...aggregate.surahNames],
+          };
+        }
+
+        let totalScoreSum = 0;
         if (allTransitions.length > 0) {
           totalScoreSum = allTransitions.reduce((acc, t) => acc + t.memorizationScore, 0);
-          setOverallAvg(Number((totalScoreSum / allTransitions.length).toFixed(1)));
-        } else {
-          setOverallAvg(null);
         }
 
-        setStatsMap(stats);
-        setTotalTransitions(allTransitions.length);
-        setStatsError(null);
+        if (isMounted) {
+          setStatsMap(stats);
+          setJuzStats(groupedJuzStats);
+          setTotalTransitions(allTransitions.length);
+          setOverallAvg(allTransitions.length > 0 ? Number((totalScoreSum / allTransitions.length).toFixed(1)) : null);
+          setStatsError(null);
+          setIsStatsLoading(false);
+        }
       } catch (error) {
-        setStatsError(error instanceof Error ? error.message : 'Kesalahan tidak diketahui.');
+        if (isMounted) {
+          setStatsError(error instanceof Error ? error.message : 'Kesalahan tidak diketahui.');
+          setIsStatsLoading(false);
+        }
       }
     }
 
     loadStats();
+
+    return () => {
+      isMounted = false;
+    };
   }, [collections]);
 
   return (
@@ -118,10 +180,12 @@ export const Home: React.FC<HomeProps> = ({
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-emerald-100 flex items-center gap-2">
               <Compass className="w-5 h-5 text-emerald-400" />
-              Koleksi Surah Tersedia
+              {grouping === 'surah' ? 'Koleksi Surah Tersedia' : 'Transisi Berdasarkan Juz'}
             </h3>
             <p className="text-xs sm:text-sm text-emerald-300/80">
-              Pilih surah untuk mengelola transisi ayat atau memulai latihan acak
+              {grouping === 'surah'
+                ? 'Pilih surah untuk mengelola transisi ayat atau memulai latihan acak'
+                : 'Transisi dikelompokkan menurut Juz ayat pertama; pilih Juz untuk melihat daftarnya'}
             </p>
           </div>
 
@@ -134,7 +198,26 @@ export const Home: React.FC<HomeProps> = ({
           </button>
         </div>
 
-        {/* Surah Cards Grid - Restored to Initial Clean Emerald Cards */}
+        <div className="mb-5 inline-flex rounded-xl border border-emerald-800/70 bg-[#0C2B21] p-1" role="group" aria-label="Pengelompokan koleksi">
+          <button
+            type="button"
+            onClick={() => setGrouping('surah')}
+            aria-pressed={grouping === 'surah'}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${grouping === 'surah' ? 'bg-emerald-700 text-white shadow-sm' : 'text-emerald-200 hover:bg-emerald-900/60'}`}
+          >
+            Berdasarkan Surah
+          </button>
+          <button
+            type="button"
+            onClick={() => setGrouping('juz')}
+            aria-pressed={grouping === 'juz'}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${grouping === 'juz' ? 'bg-emerald-700 text-white shadow-sm' : 'text-emerald-200 hover:bg-emerald-900/60'}`}
+          >
+            Berdasarkan Juz
+          </button>
+        </div>
+
+        {grouping === 'surah' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {collections.map((col) => {
             const stats = statsMap[col.id] || { count: 0, avgScore: null };
@@ -221,6 +304,52 @@ export const Home: React.FC<HomeProps> = ({
             );
           })}
         </div>
+        ) : isStatsLoading ? (
+          <div className="rounded-2xl border border-emerald-800/60 bg-[#0C2B21] p-8 text-center text-sm text-emerald-200/70">
+            Memuat daftar Juz...
+          </div>
+        ) : Object.keys(juzStats).length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-emerald-800/60 bg-[#0C2B21] p-8 text-center text-sm text-emerald-200/70">
+            Belum ada transisi yang dapat dikelompokkan berdasarkan Juz.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {Object.entries(juzStats).sort(([a], [b]) => Number(a) - Number(b)).map(([juzNumber, stats]) => (
+              <button
+                type="button"
+                key={juzNumber}
+                onClick={() => onSelectJuz(Number(juzNumber))}
+                className="group rounded-2xl border border-stone-300 bg-stone-100 p-6 text-left shadow-md transition-all hover:border-emerald-300 hover:shadow-xl hover:shadow-black/30"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-300/40 bg-gradient-to-br from-emerald-100 to-emerald-200/60 text-base font-extrabold text-emerald-800">
+                      {juzNumber}
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-emerald-950 group-hover:text-emerald-700">
+                        Juz {juzNumber}
+                      </h4>
+                      <p className="text-xs font-medium text-stone-500">
+                        {stats.surahNames.join(', ')}
+                      </p>
+                    </div>
+                  </div>
+                  <Layers className="h-5 w-5 shrink-0 text-emerald-700" />
+                </div>
+                <div className="mt-5 flex items-center justify-between border-t border-emerald-200 pt-4">
+                  <span className="text-sm font-bold text-emerald-950">
+                    {stats.count} Pasang Transisi
+                  </span>
+                  <span className="flex items-center gap-1 text-sm font-semibold text-emerald-800">
+                    <Award className="h-4 w-4" />
+                    {stats.avgScore}/10
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Guide Note Box */}
