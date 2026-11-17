@@ -8,7 +8,7 @@ import {
   writeBatch,
   type DocumentReference,
 } from 'firebase/firestore';
-import { signInAnonymously, type User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import type { StudyCollection, VerseTransition } from '../types/quran';
 import { auth, firestore } from '../firebase';
 import { getInitialSeedCollections } from './quranService';
@@ -26,7 +26,16 @@ function getUser(): Promise<User> {
   if (!userPromise) {
     userPromise = (async () => {
       await auth.authStateReady();
-      return auth.currentUser ?? (await signInAnonymously(auth)).user;
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error(
+          "Kamu harus login menggunakan Google terlebih dahulu."
+        );
+      }
+
+      return user;
     })();
   }
 
@@ -35,7 +44,6 @@ function getUser(): Promise<User> {
     throw error;
   });
 }
-
 function userCollection(userId: string, name: 'collections' | 'transitions' | 'transitionKeys') {
   return collection(firestore, 'users', userId, name);
 }
