@@ -2,7 +2,7 @@
   {
     "number": 1,
     "name": "سُورَةُ ٱلْفَاتِحَةِ",
-    "englishName": "Al-Faatiha",
+    "englishName": "Al-Fatihah",
     "englishNameTranslation": "The Opening",
     "numberOfAyahs": 7,
     "revelationType": "Meccan"
@@ -34,7 +34,7 @@
   {
     "number": 5,
     "name": "سُورَةُ المَائـِدَةِ",
-    "englishName": "Al-Maaida",
+    "englishName": "Al-Maidah",
     "englishNameTranslation": "The Table",
     "numberOfAyahs": 120,
     "revelationType": "Medinan"
@@ -42,7 +42,7 @@
   {
     "number": 6,
     "name": "سُورَةُ الأَنۡعَامِ",
-    "englishName": "Al-An'aam",
+    "englishName": "Al-An'am",
     "englishNameTranslation": "The Cattle",
     "numberOfAyahs": 165,
     "revelationType": "Meccan"
