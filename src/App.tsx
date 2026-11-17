@@ -6,8 +6,26 @@ import { Home } from './components/Home';
 import { SurahDetail } from './components/SurahDetail';
 import { VerseTransitionList } from './components/VerseTransitionList';
 import { RandomPractice } from './components/RandomPractice';
+import { useState, useEffect } from 'react';
+import type { User } from 'firebase/auth';
+
+import {
+  signInWithGoogle,
+  signOutUser,
+  observeAuth,
+} from './services/authService';
 
 export function App() {
+    const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return observeAuth((currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+    });
+  }, []);
   const [collections, setCollections] = useState<StudyCollection[]>([]);
   const [currentScreen, setCurrentScreen] = useState<ActiveScreen>({ type: 'home' });
   const [loading, setLoading] = useState(true);
@@ -66,6 +84,50 @@ export function App() {
     }
     return 'Kembali';
   };
+
+    if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#061C14] flex items-center justify-center text-emerald-200">
+        Memeriksa autentikasi...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#061C14] flex flex-col items-center justify-center text-emerald-100 p-6">
+        <h1 className="text-3xl font-bold mb-3">
+          Rusyaidan Qur'an Mastery
+        </h1>
+
+        <p className="text-emerald-300/70 mb-8 text-center">
+          Silakan login menggunakan akun Google untuk mengakses data hafalanmu.
+        </p>
+
+        {authError && (
+          <p className="text-rose-300 mb-4 text-sm">
+            {authError}
+          </p>
+        )}
+
+        <button
+          onClick={async () => {
+            try {
+              setAuthError(null);
+              await signInWithGoogle();
+            } catch (error) {
+              setAuthError(
+                error instanceof Error ? error.message : "Login gagal."
+              );
+            }
+          }}
+          className="px-6 py-3 bg-emerald-700 hover:bg-emerald-600 rounded-xl font-semibold"
+        >
+          Sign in with Google
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#061C14] text-[#ECFDF5] flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-100">
