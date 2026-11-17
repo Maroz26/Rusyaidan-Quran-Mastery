@@ -69,11 +69,7 @@ export function App() {
   };
 }, [user, authLoading]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
+  
   const handleAddCollection = async (newCol: StudyCollection) => {
     await saveCollection(newCol);
     const updated = await getCollections();
@@ -170,7 +166,7 @@ export function App() {
             <h2 className="text-lg font-bold text-rose-200">Gagal memuat data Firestore</h2>
             <p className="mt-2 text-sm text-emerald-100/80">{loadError}</p>
             <p className="mt-3 text-xs text-emerald-300/70">
-              Pastikan Anonymous Authentication aktif dan Firestore Rules sudah dipublikasikan.
+              Pastikan Google Authentication aktif, konfigurasi Firebase benar, dan Firestore Rules sudah dipublikasikan..
             </p>
             <button
               onClick={() => window.location.reload()}
