@@ -1,6 +1,6 @@
 # Rusyaidan Qur'an Mastery
 
-Aplikasi web modern, lokal-first (*local-first*), dan independen untuk mengevaluasi dan memperkuat hafalan Al-Qur'an secara terfokus pada:
+Aplikasi web modern untuk mengevaluasi dan memperkuat hafalan Al-Qur'an secara terfokus, dengan data belajar tersinkron ke Firebase Cloud Firestore:
 
 1. **Verse Transition (Transisi Ayat)** — Kemampuan menyambung dari satu ayat ke ayat berikutnya secara tepat, lancar, dan mantap.
 2. **Verse Retention (Retensi Ayat)** — Kemampuan mengingat keseluruhan ayat dengan akurat dan konsisten (direncanakan untuk fase berikutnya, berstatus *Coming Soon* pada rilis ini).
@@ -15,10 +15,8 @@ Sesuai ketentuan, aplikasi ini menggunakan dataset Al-Qur'an terverifikasi dan o
 - **Mushaf & Rasm:** Medina Mushaf (*Uthmani Hafs Text*)
 - **Karakteristik Teks:** Menjaga harakat lengkap, tanda waqaf mushaf standar, penomoran ayat, tanda juz, dan simbol-simbol ortografi Al-Qur'an asli tanpa paraphrasing atau modifikasi buatan.
 - **Cakupan Dataset Bundled:**
-  - Surah Al-A'raf (Surah ke-7) — 206 ayat lengkap.
-  - Surah At-Tawbah (Surah ke-9) — 129 ayat lengkap.
-  - Surah Al-Fatihah (Surah ke-1) — 7 ayat lengkap.
-  - Metadata lengkap seluruh 114 Surah Al-Qur'an (nama Arab, nama Latin, terjemahan, jumlah ayat, tempat turun Makkiyyah/Madaniyyah).
+  - Seluruh **114 surah dan 6.236 ayat** tersedia secara lokal, beserta metadata surah.
+  - Saat surah ditambahkan, ayatnya langsung tersedia untuk pratinjau dan pendaftaran transisi; tidak perlu memasukkan teks ayat manual.
 - **Arsitektur:** Menggunakan modul `src/services/quranService.ts` dengan fungsi lookup lokal seperti:
   - `getVerse(7, 36)` -> Mengambil teks otentik Al-A'raf ayat 36
   - `getVerse(7, 37)` -> Mengambil teks otentik Al-A'raf ayat 37
@@ -72,21 +70,20 @@ Sesuai ketentuan, aplikasi ini menggunakan dataset Al-Qur'an terverifikasi dan o
 - **Penilaian Kekuatan Hafalan Mandiri (1–10):**
   - Rentang 1 (lemah/baru) hingga 10 (sangat lancar/mutqin).
   - Pengguna dapat menaikkan/menurunkan dengan tombol `[-]` dan `[+]` atau memilih langsung pil nilai 1–10.
-  - Skor tersimpan seketika ke IndexedDB dan independen untuk setiap pasangan ayat.
+  - Skor tersimpan seketika ke Firestore dan independen untuk setiap pasangan ayat.
 - **Navigasi Lanjut:**
   - Tombol **Lanjut Transisi Berikutnya** mengundi transisi berikutnya dan mereset status rekaman ke *idle*.
 
 ---
 
-## 3. Arsitektur Data & Persistensi Lokal (*Local Storage Architecture*)
+## 3. Arsitektur Data & Persistensi (*Data Architecture*)
 
-Aplikasi dirancang sepenuhnya *local-first* tanpa backend, server API, maupun akun login:
+- **Cloud Firestore:** Koleksi dan transisi disimpan di bawah `users/{anonymousUid}/collections` dan `users/{anonymousUid}/transitions`. Anonymous Authentication membuat identitas privat per browser tanpa formulir atau layar login.
+- **Migrasi satu kali:** Jika ruang Firestore untuk UID tersebut kosong, data lama dari IndexedDB disalin ke Firestore. Jika sudah ada data cloud, data cloud tidak ditimpa. IndexedDB lama tetap dibiarkan sebagai salinan lokal.
+- **IndexedDB:** `RusyaidanQuranMasteryDB` (Version 1) digunakan untuk membaca data lama saat migrasi; store-nya `collections` dan `transitions`.
+- **Firebase Analytics:** Mengirim analitik penggunaan sesuai konfigurasi proyek.
 
-- **IndexedDB Database:** `RusyaidanQuranMasteryDB` (Version 1)
-  - **Store `collections`:** Menyimpan daftar koleksi belajar (id, type, referenceNumber, name, arabicName).
-  - **Store `transitions`:** Menyimpan data transisi ayat (id, collectionId, surahNumber, firstVerseNumber, nextVerseNumber, memorizationScore, createdAt, updatedAt).
-- Indeks dibuat untuk pencarian cepat dan pencegahan duplikasi data.
-- Data dan skor hafalan tetap tersimpan utuh meskipun halaman di-refresh atau peramban ditutup.
+Sebelum menjalankan aplikasi, aktifkan **Authentication → Sign-in method → Anonymous** di Firebase Console dan publikasikan aturan dari [`firestore.rules`](./firestore.rules) melalui **Firestore Database → Rules**. Konfigurasi aplikasi dibaca dari variabel `VITE_FIREBASE_*` di `.env`.
 
 ---
 
@@ -117,7 +114,7 @@ rusyaidan-quran-mastery/
 │   │   └── surahList.json               # Metadata 114 Surah
 │   ├── services/
 │   │   ├── quranService.ts              # Query ayat lokal, format penomoran Arab
-│   │   └── dbService.ts                 # Lapisan persistensi IndexedDB
+│   │   └── dbService.ts                 # Firestore dan migrasi IndexedDB
 │   ├── types/
 │   │   └── quran.ts                     # TypeScript interfaces & types
 │   ├── App.tsx                          # Root controller & navigasi layar
@@ -155,12 +152,18 @@ rusyaidan-quran-mastery/
    npm run build
    ```
 
-4. **Menjalankan Linter / Pengecekan Kode:**
+4. **Memperbarui dataset seluruh surah dari Al-Quran Cloud:**
+   ```bash
+   npm run fetch:quran-data
+   ```
+   Skrip memvalidasi jumlah dan urutan seluruh 6.236 ayat sebelum memperbarui file dataset.
+
+5. **Menjalankan Linter / Pengecekan Kode:**
    ```bash
    npm run lint
    ```
 
-5. **Menjalankan Verifikasi Logika & Dataset:**
+6. **Menjalankan Verifikasi Logika & Dataset:**
    ```bash
    node scripts/verify-logic.mjs
    ```
@@ -176,6 +179,6 @@ Seluruh skenario telah teruji dan terverifikasi:
 - **Scenario D (Rincian Ayat):** Membuka rincian lengkap ayat 36 dan 37 dengan rasm Uthmani dan tanda ayat Arab.
 - **Scenario E (Latihan Acak):** Mengundi hanya dari ayat yang telah terdaftar, ayat sambungan disembunyikan.
 - **Scenario F (Simulasi Rekaman):** Tekan dan tahan memunculkan animasi gelombang suara dan timer; dilepas menampilkan status terekam tanpa izin mikrofon.
-- **Scenario G (Skor Hafalan):** Mengubah skor (1–10) tersimpan seketika di IndexedDB dan tidak tertukar antar pasangan ayat.
+- **Scenario G (Skor Hafalan):** Mengubah skor (1–10) tersimpan seketika di Firestore dan tidak tertukar antar pasangan ayat.
 - **Scenario H (Tombol Lanjut):** Memilih transisi acak berikutnya tanpa pengulangan langsung dan mereset status rekaman.
-- **Scenario I (Persistensi):** Menyimpan seluruh data pendaftaran dan skor lokal di IndexedDB lintas *refresh*.
+- **Scenario I (Persistensi):** Menyimpan seluruh data pendaftaran dan skor di Firestore lintas *refresh*.

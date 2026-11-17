@@ -29,6 +29,7 @@ export const RandomPractice: React.FC<RandomPracticeProps> = ({
 }) => {
   const [transitions, setTransitions] = useState<VerseTransition[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [currentTransition, setCurrentTransition] = useState<VerseTransition | null>(null);
   const [revealAnswer, setRevealAnswer] = useState(false);
   const [practiceCount, setPracticeCount] = useState(1);
@@ -45,6 +46,7 @@ export const RandomPractice: React.FC<RandomPracticeProps> = ({
       .then((list) => {
         if (!isMounted) return;
         setTransitions(list);
+        setLoadError(null);
         if (list.length > 0) {
           const randomIndex = Math.floor(Math.random() * list.length);
           setCurrentTransition(list[randomIndex]);
@@ -55,7 +57,10 @@ export const RandomPractice: React.FC<RandomPracticeProps> = ({
       })
       .catch((err) => {
         console.error('Failed to load transitions for practice:', err);
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoadError(err instanceof Error ? err.message : 'Kesalahan tidak diketahui.');
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -103,7 +108,12 @@ export const RandomPractice: React.FC<RandomPracticeProps> = ({
   const handleScoreChange = async (newScore: number) => {
     if (!currentTransition) return;
     const clamped = Math.max(1, Math.min(10, newScore));
-    await updateTransitionScore(currentTransition.id, clamped);
+    try {
+      await updateTransitionScore(currentTransition.id, clamped);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Gagal menyimpan skor ke Firestore.');
+      return;
+    }
 
     // Update in local state
     setCurrentTransition((prev) => (prev ? { ...prev, memorizationScore: clamped } : null));
@@ -150,6 +160,14 @@ export const RandomPractice: React.FC<RandomPracticeProps> = ({
         <div className="animate-spin w-8 h-8 border-3 border-emerald-400 border-t-transparent rounded-full mx-auto mb-3" />
         <p className="text-sm">Mempersiapkan sesi latihan acak...</p>
       </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <p role="alert" className="mx-auto mt-10 max-w-xl rounded-xl border border-rose-800/60 bg-rose-950/40 p-4 text-sm text-rose-200">
+        Gagal memuat transisi dari Firestore: {loadError}
+      </p>
     );
   }
 

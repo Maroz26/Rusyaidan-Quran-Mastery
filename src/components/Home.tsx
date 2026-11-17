@@ -31,29 +31,32 @@ export const Home: React.FC<HomeProps> = ({
   const [showAddModal, setShowAddModal] = useState(false);
   const [totalTransitions, setTotalTransitions] = useState(0);
   const [overallAvg, setOverallAvg] = useState<number | null>(null);
+  const [statsError, setStatsError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadStats() {
-      const stats: CollectionStatsMap = {};
-      let totalCount = 0;
-      let totalScoreSum = 0;
+      try {
+        const stats: CollectionStatsMap = {};
+        let totalScoreSum = 0;
 
-      for (const col of collections) {
-        const s = await getCollectionStats(col.id);
-        stats[col.id] = s;
+        for (const col of collections) {
+          stats[col.id] = await getCollectionStats(col.id);
+        }
+
+        const allTransitions = await getTransitions();
+        if (allTransitions.length > 0) {
+          totalScoreSum = allTransitions.reduce((acc, t) => acc + t.memorizationScore, 0);
+          setOverallAvg(Number((totalScoreSum / allTransitions.length).toFixed(1)));
+        } else {
+          setOverallAvg(null);
+        }
+
+        setStatsMap(stats);
+        setTotalTransitions(allTransitions.length);
+        setStatsError(null);
+      } catch (error) {
+        setStatsError(error instanceof Error ? error.message : 'Kesalahan tidak diketahui.');
       }
-
-      const allTransitions = await getTransitions();
-      totalCount = allTransitions.length;
-      if (totalCount > 0) {
-        totalScoreSum = allTransitions.reduce((acc, t) => acc + t.memorizationScore, 0);
-        setOverallAvg(Number((totalScoreSum / totalCount).toFixed(1)));
-      } else {
-        setOverallAvg(null);
-      }
-
-      setStatsMap(stats);
-      setTotalTransitions(totalCount);
     }
 
     loadStats();
@@ -106,6 +109,11 @@ export const Home: React.FC<HomeProps> = ({
 
       {/* Surah Collections Section */}
       <div>
+        {statsError && (
+          <p role="alert" className="mb-3 rounded-xl border border-rose-800/60 bg-rose-950/40 p-3 text-xs text-rose-200">
+            Gagal memuat statistik Firestore: {statsError}
+          </p>
+        )}
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-emerald-100 flex items-center gap-2">
@@ -137,7 +145,7 @@ export const Home: React.FC<HomeProps> = ({
               <div
                 key={col.id}
                 onClick={() => onSelectCollection(col.id)}
-                className="group relative bg-white rounded-2xl p-6 border border-emerald-100/90 hover:border-emerald-300 shadow-md hover:shadow-xl hover:shadow-black/30 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                className="group relative bg-stone-100 rounded-2xl p-6 border border-stone-300 hover:border-emerald-300 shadow-md hover:shadow-xl hover:shadow-black/30 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
                 {/* Top Badge & Number */}
                 <div className="flex items-start justify-between">

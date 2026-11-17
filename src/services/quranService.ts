@@ -1,20 +1,80 @@
-import quranDataJson from '../data/quranData.json';
+import quranDataUrl from '../data/quranData.json?url';
 import surahListJson from '../data/surahList.json';
 import type { QuranVerse, StudyCollection, SurahInfo } from '../types/quran';
 
 const surahs: SurahInfo[] = surahListJson as SurahInfo[];
-const verses: QuranVerse[] = quranDataJson.verses as QuranVerse[];
+let verses: QuranVerse[] = [];
 
-// Quick lookup map: "surahNumber:verseNumber" -> QuranVerse
-const verseMap = new Map<string, QuranVerse>();
-for (const v of verses) {
-  verseMap.set(`${v.surahNumber}:${v.verseNumber}`, v);
-}
+let verseMap = new Map<string, QuranVerse>();
+let quranDataPromise: Promise<void> | null = null;
 
 // Map for surah lookup by number
 const surahMap = new Map<number, SurahInfo>();
 for (const s of surahs) {
   surahMap.set(s.number, s);
+}
+
+export function initializeQuranData(): Promise<void> {
+  if (!quranDataPromise) {
+    quranDataPromise = (async () => {
+      const response = await fetch(quranDataUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to load Quran text dataset: HTTP ${response.status}`);
+      }
+
+      const data: unknown = await response.json();
+      if (
+        typeof data !== 'object' ||
+        data === null ||
+        !('verses' in data) ||
+        !Array.isArray(data.verses)
+      ) {
+        throw new Error('Quran text dataset has an invalid format.');
+      }
+
+      const expectedVerseCount = surahs.reduce((count, surah) => count + surah.numberOfAyahs, 0);
+      if (data.verses.length !== expectedVerseCount) {
+        throw new Error(
+          `Quran text dataset is incomplete: expected ${expectedVerseCount} verses, got ${data.verses.length}.`,
+        );
+      }
+
+      const loadedVerses = data.verses as QuranVerse[];
+      const loadedVerseMap = new Map<string, QuranVerse>();
+      for (const verse of loadedVerses) {
+        if (
+          !Number.isInteger(verse.surahNumber) ||
+          !Number.isInteger(verse.verseNumber) ||
+          typeof verse.arabicText !== 'string' ||
+          !verse.arabicText.trim()
+        ) {
+          throw new Error('Quran text dataset contains an invalid verse.');
+        }
+
+        const key = `${verse.surahNumber}:${verse.verseNumber}`;
+        if (loadedVerseMap.has(key)) {
+          throw new Error(`Quran text dataset contains a duplicate verse: ${key}.`);
+        }
+        loadedVerseMap.set(key, verse);
+      }
+
+      for (const surah of surahs) {
+        for (let verseNumber = 1; verseNumber <= surah.numberOfAyahs; verseNumber += 1) {
+          if (!loadedVerseMap.has(`${surah.number}:${verseNumber}`)) {
+            throw new Error(`Quran text dataset is missing verse ${surah.number}:${verseNumber}.`);
+          }
+        }
+      }
+
+      verses = loadedVerses;
+      verseMap = loadedVerseMap;
+    })().catch((error: unknown) => {
+      quranDataPromise = null;
+      throw error;
+    });
+  }
+
+  return quranDataPromise;
 }
 
 /**

@@ -25,7 +25,28 @@ console.log(`Surah 9: ${surah9.englishName} (${surah9.name}), ${surah9.numberOfA
 if (!surah7 || surah7.numberOfAyahs !== 206) throw new Error('Surah 7 metadata invalid');
 if (!surah9 || surah9.numberOfAyahs !== 129) throw new Error('Surah 9 metadata invalid');
 
-console.log('\n--- TEST 2: Verified Arabic Text Retrieval (Al-A\'raf 36 & 37) ---');
+console.log('\n--- TEST 2: Complete Verse Dataset Coverage ---');
+const expectedVerseCount = surahList.reduce((total, surah) => total + surah.numberOfAyahs, 0);
+if (expectedVerseCount !== 6236) {
+  throw new Error(`Expected 6,236 verses in metadata, got ${expectedVerseCount}`);
+}
+if (quranData.verses.length !== expectedVerseCount) {
+  throw new Error(`Expected ${expectedVerseCount} bundled verses, got ${quranData.verses.length}`);
+}
+for (const surah of surahList) {
+  const verses = quranData.verses
+    .filter(verse => verse.surahNumber === surah.number)
+    .sort((a, b) => a.verseNumber - b.verseNumber);
+  if (verses.length !== surah.numberOfAyahs) {
+    throw new Error(`Surah ${surah.number} has ${verses.length} bundled verses`);
+  }
+  if (verses.some((verse, index) => verse.verseNumber !== index + 1 || !verse.arabicText.trim())) {
+    throw new Error(`Surah ${surah.number} has missing or out-of-order verse text`);
+  }
+}
+console.log(`All 6,236 verses across ${surahList.length} surahs are present and ordered.`);
+
+console.log('\n--- TEST 3: Verified Arabic Text Retrieval (Al-A\'raf 36 & 37) ---');
 const v36 = quranData.verses.find(v => v.surahNumber === 7 && v.verseNumber === 36);
 const v37 = quranData.verses.find(v => v.surahNumber === 7 && v.verseNumber === 37);
 
@@ -43,14 +64,14 @@ if (!v37.arabicText.includes('فَمَنْ أَظْلَمُ')) {
   throw new Error('Ayah 7:37 does not match expected authentic text');
 }
 
-console.log('\n--- TEST 3: At-Tawbah Verses Check ---');
+console.log('\n--- TEST 4: At-Tawbah Verses Check ---');
 const v9_1 = quranData.verses.find(v => v.surahNumber === 9 && v.verseNumber === 1);
 const v9_2 = quranData.verses.find(v => v.surahNumber === 9 && v.verseNumber === 2);
 if (!v9_1 || !v9_2) throw new Error('Surah 9 verses not found!');
 console.log('Ayah 9:1 text:', v9_1.arabicText);
 console.log('Ayah 9:2 text:', v9_2.arabicText);
 
-console.log('\n--- TEST 4: Validation Edge Cases Simulation ---');
+console.log('\n--- TEST 5: Validation Edge Cases Simulation ---');
 function validatePair(surahNumber, first, next, maxAyahs) {
   if (first < 1 || first > maxAyahs) return { valid: false, error: 'First verse out of bounds' };
   if (next < 1 || next > maxAyahs) return { valid: false, error: 'Next verse out of bounds' };

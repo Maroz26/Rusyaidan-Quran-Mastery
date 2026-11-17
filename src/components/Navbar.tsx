@@ -87,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="mt-4 space-y-4 text-sm text-stone-600 leading-relaxed">
               <p>
-                <strong className="text-emerald-950">Rusyaidan Qur'an Mastery</strong> adalah aplikasi web mandiri lokal-first untuk membantu penghafal Al-Qur'an mengevaluasi dan memperkuat hafalan dengan fokus utama:
+                <strong className="text-emerald-950">Rusyaidan Qur'an Mastery</strong> adalah aplikasi web untuk membantu penghafal Al-Qur'an mengevaluasi dan memperkuat hafalan dengan fokus utama:
               </p>
 
               <div className="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-100 space-y-2">
@@ -117,7 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div>
                 <h4 className="font-semibold text-emerald-950 mb-1">Simulasi Perekaman &amp; Penilaian Mandiri:</h4>
                 <p className="text-xs text-stone-500">
-                  Fitur perekaman merupakan simulasi visual interaktif (tanpa mikrofon riil). Skor kekuatan hafalan (1–10) ditentukan secara mandiri oleh pengguna dan tersimpan aman di peramban Anda melalui <strong className="text-emerald-900">IndexedDB</strong>.
+                  Fitur perekaman merupakan simulasi visual interaktif (tanpa mikrofon riil). Skor kekuatan hafalan (1–10) ditentukan secara mandiri oleh pengguna dan tersimpan di <strong className="text-emerald-900">Firebase Cloud Firestore</strong>.
                 </p>
               </div>
             </div>

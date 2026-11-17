@@ -35,6 +35,7 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
 }) => {
   const [transitions, setTransitions] = useState<VerseTransition[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDetailTransition, setSelectedDetailTransition] = useState<VerseTransition | null>(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
@@ -45,12 +46,16 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
       .then((list) => {
         if (isMounted) {
           setTransitions(list);
+          setLoadError(null);
           setLoading(false);
         }
       })
       .catch((err) => {
         console.error('Error loading transitions:', err);
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoadError(err instanceof Error ? err.message : 'Kesalahan tidak diketahui.');
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -70,17 +75,25 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
     const target = transitions.find((t) => t.id === transitionId);
     if (!target) return;
     const newScore = Math.max(1, Math.min(10, target.memorizationScore + delta));
-    await updateTransitionScore(transitionId, newScore);
-    setTransitions((prev) =>
-      prev.map((t) => (t.id === transitionId ? { ...t, memorizationScore: newScore } : t))
-    );
+    try {
+      await updateTransitionScore(transitionId, newScore);
+      setTransitions((prev) =>
+        prev.map((t) => (t.id === transitionId ? { ...t, memorizationScore: newScore } : t))
+      );
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Gagal menyimpan skor ke Firestore.');
+    }
   };
 
   const handleDelete = async (transitionId: string, label: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm(`Hapus transisi ayat ${label} dari daftar?`)) {
-      await deleteTransition(transitionId);
-      refreshData();
+      try {
+        await deleteTransition(transitionId);
+        refreshData();
+      } catch (error) {
+        window.alert(error instanceof Error ? error.message : 'Gagal menghapus transisi dari Firestore.');
+      }
     }
   };
 
@@ -97,8 +110,12 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    await addTransition(newTrans);
-    refreshData();
+    try {
+      await addTransition(newTrans);
+      refreshData();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Gagal menyimpan transisi ke Firestore.');
+    }
   };
 
   const avgScore =
@@ -153,6 +170,10 @@ export const VerseTransitionList: React.FC<VerseTransitionListProps> = ({
           <div className="animate-spin w-8 h-8 border-3 border-emerald-400 border-t-transparent rounded-full mx-auto mb-3" />
           <p className="text-sm">Memuat data transisi...</p>
         </div>
+      ) : loadError ? (
+        <p role="alert" className="rounded-xl border border-rose-800/60 bg-rose-950/40 p-4 text-sm text-rose-200">
+          Gagal memuat transisi dari Firestore: {loadError}
+        </p>
       ) : transitions.length === 0 ? (
         /* Empty State */
         <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-dashed border-emerald-200/80 space-y-4 shadow-md">

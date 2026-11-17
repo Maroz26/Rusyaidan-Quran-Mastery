@@ -11,6 +11,7 @@ export function App() {
   const [collections, setCollections] = useState<StudyCollection[]>([]);
   const [currentScreen, setCurrentScreen] = useState<ActiveScreen>({ type: 'home' });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,7 +24,10 @@ export function App() {
       })
       .catch((err) => {
         console.error('Error fetching collections:', err);
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoadError(err instanceof Error ? err.message : 'Kesalahan tidak diketahui.');
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -76,7 +80,21 @@ export function App() {
         {loading ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-emerald-300/60">
             <div className="animate-spin w-9 h-9 border-3 border-emerald-500 border-t-transparent rounded-full mb-3" />
-            <p className="text-sm font-medium text-emerald-200/80">Memuat data Rusyaidan Qur'an Mastery...</p>
+            <p className="text-sm font-medium text-emerald-200/80">Menghubungkan ke Firestore...</p>
+          </div>
+        ) : loadError ? (
+          <div role="alert" className="max-w-xl mx-auto p-8 text-center text-emerald-100 bg-[#0C2B21] border border-rose-800/60 rounded-3xl mt-12 shadow-xl">
+            <h2 className="text-lg font-bold text-rose-200">Gagal memuat data Firestore</h2>
+            <p className="mt-2 text-sm text-emerald-100/80">{loadError}</p>
+            <p className="mt-3 text-xs text-emerald-300/70">
+              Pastikan Anonymous Authentication aktif dan Firestore Rules sudah dipublikasikan.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-5 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-sm font-semibold transition-all"
+            >
+              Coba lagi
+            </button>
           </div>
         ) : currentScreen.type === 'home' ? (
           <Home
@@ -143,7 +161,7 @@ export function App() {
           Rusyaidan Qur'an Mastery
         </p>
         <p className="text-[11px] text-emerald-500/60">
-          Teks Al-Qur'an Otentik bersumber dari Tanzil Project (Medina Mushaf Uthmani Hafs). Penyimpanan data lokal via IndexedDB.
+          Teks Al-Qur'an bersumber dari Tanzil Project (Medina Mushaf Uthmani Hafs). Data belajar tersimpan di Firestore.
         </p>
       </footer>
     </div>

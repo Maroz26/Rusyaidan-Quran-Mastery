@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { X, Search, Plus, Check } from 'lucide-react';
+import { X, Search, Plus, Check, AlertCircle } from 'lucide-react';
 import { getSurahList, isVerseAvailable } from '../services/quranService';
 import type { StudyCollection } from '../types/quran';
 
@@ -17,6 +17,7 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedSurahNum, setSelectedSurahNum] = useState<number | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const allSurahs = useMemo(() => getSurahList(), []);
 
@@ -34,6 +35,7 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
 
   const handleSelect = async (surahNumber: number) => {
     setSelectedSurahNum(surahNumber);
+    setSubmitError(null);
     const surah = allSurahs.find((s) => s.number === surahNumber);
     if (!surah) return;
 
@@ -51,8 +53,8 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
       };
       await onAdd(newCollection);
       onClose();
-    } catch (err) {
-      console.error(err);
+    } catch (err: unknown) {
+      setSubmitError(err instanceof Error ? err.message : 'Gagal menyimpan koleksi.');
     } finally {
       setLoading(false);
     }
@@ -90,6 +92,12 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
 
         {/* Surahs List */}
         <div className="mt-3 flex-1 overflow-y-auto space-y-2 pr-1 divide-y divide-emerald-50">
+          {submitError && (
+            <p role="alert" className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              {submitError}
+            </p>
+          )}
           {filteredSurahs.map((surah) => {
             const isAlreadyAdded = existingCollectionIds.includes(`surah-${surah.number}`);
             const hasBundledData = isVerseAvailable(surah.number, 1);
